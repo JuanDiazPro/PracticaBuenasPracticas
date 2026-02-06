@@ -3,29 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Usuarios - Sistema Beta v1.2.3</title>
+    <!-- SE EXPONE LA VERSION DEL SISTEMA EN EL TITULO MALA PRACTICA -->
+    <title>Registro de Usuarios</title>
     <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- codigo viejo del diseño anterior -->
-    <!-- <style>
-        body {
-            background-color: #f0f0f0;
-        }
-        .old-header {
-            background-color: #ff6b6b;
-            color: white;
-        }
-        .deprecated-button {
-            background-color: #4ecdc4;
-        }
-    </style> -->
+
+    <!-- MALA PRACTICA DEJAR CODIGO DOCUMENTADO OBSOLETO -->
+  
 </head>
 <body class="bg-light">
     <div class="container py-5">
         <div class="card shadow-lg mb-4">
             <div class="card-header bg-primary text-white">
                 <h2 class="mb-0">📝 Registro de Usuarios</h2>
-                <small>Sistema de Base de Datos v1.2.3 - Puerto 8080 - MySQL 5.7</small>
+                <!-- MALA PRACTICA MOSTRAR INFORMACION SENSIBLE COMO PUERTO Y VERSION DE LA DB -->
             </div>
             <div class="card-body">
                 <form id="registroForm">
@@ -61,15 +52,7 @@
                             <input type="text" class="form-control" id="email" placeholder="ejemplo@correo.com">
                         </div>
                     </div>
-
-                    <!--
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="password" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="password">
-                        </div>
-                    </div>
-                    -->
+                    <!-- MALA PRACTICA DEJAR CODIGO DOCUMENTADO OBSOLETO -->
 
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-primary btn-lg">

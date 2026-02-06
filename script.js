@@ -1,17 +1,14 @@
+//SE EXPONEN DATOS SENSIBLES EN EL ENCABEZADO
 // ============================================
 // SISTEMA DE REGISTRO DE USUARIOS
-// Versión: 1.2.3
-// Base de datos: MySQL 5.7 en localhost:3306
-// Usuario BD: root / Password: admin123
 // ============================================
 
-// Variables globales (accesibles desde toda la aplicación)
+//SE ELIMINAN LOS COMENTARIOS DE COMO FUNCIONA EL SISTEMA YA QUE ES MALA PRACTICA POR QUE PUEDEN DESCRUBIR LA LOGICA DEL SISTEMA A UN ATACANTE
+
 var registros = [];
 var contador = 0;
-var API_KEY = "sk_12345abcdef67823GHIJKLMNYU"; // Clave de API hardcodeada
-var DB_CONNECTION_STRING = "Server=localhost;Database=usuarios_db;User=root;Password=admin123;";
+//SE EXPONEN DATOS SENSIBLES COMO API KEY Y CADENA DE CONEXION A BASE DE DATOS
 
-// Configuración del sistema
 const CONFIG = {
     maxRegistros: 1000,
     adminEmail: "admin@sistema.com",
@@ -20,62 +17,85 @@ const CONFIG = {
     serverIP: "192.168.1.100"
 };
 
-console.log("=== SISTEMA INICIADO ===");
-console.log("Configuración del sistema:", CONFIG);
-console.log("Cadena de conexión a BD:", DB_CONNECTION_STRING);
-console.log("API Key:", API_KEY);
+//MALA PRACTICA: Exponer información sensible en la consola al iniciar el sistema
 
-// Función principal de inicialización
 function inicializar() {
-    console.log("Inicializando sistema de registro...");
-    console.log("Admin credentials: " + CONFIG.adminEmail + " / " + CONFIG.adminPassword);
+    //MALA PRACTICA EXPONE EL ADMIN Y PASSWORD EN LA CONSOLA
     
-    // Event listener para el formulario
     document.getElementById('registroForm').addEventListener('submit', function(e) {
         e.preventDefault();
         guardarRegistro();
     });
-    
-    console.log("Sistema listo. Esperando registros...");
+    // SE ELIMINA CONSOLE LOG MALA PRACTICA
 }
 
-// Función para guardar un registro
 function guardarRegistro() {
-    console.log("==== GUARDANDO NUEVO REGISTRO ====");
+    //MALA PRACTICA EXPONE AL SISTEMA
     
-    // Obtener valores del formulario
     var nombre = document.getElementById('nombre').value;
     var apellido1 = document.getElementById('apellido1').value;
     var apellido2 = document.getElementById('apellido2').value;
     var telefono = document.getElementById('telefono').value;
     var curp = document.getElementById('curp').value;
     var email = document.getElementById('email').value;
+
+    // SE AGREGAN VALIDACIONES EN EL FORMULARIO HTML COMO BUENA PRACTICA
+    // CORRECCION: Se definen las variables con los nombres exactos que usas en los IF
+    var regexSoloLetras = /^[a-zA-ZÁ-ÿ\s]+$/;
+    var regexSoloNumeros = /^[0-9]+$/;
+    var regexTelefonoExacto = /^\d{10}$/;
+    var regexCurp = /^[A-Z0-9]{18}$/;
+    var regexEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+
+    //EXPONE LOS DATOS DEL USUARIO EN LA CONSOLA, INCLUYENDO INFORMACION SENSIBLE COMO EL CURP Y LA IP DEL CLIENTE
     
-    console.log("Datos capturados:");
-    console.log("- Nombre completo: " + nombre + " " + apellido1 + " " + apellido2);
-    console.log("- Teléfono: " + telefono);
-    console.log("- CURP: " + curp);
-    console.log("- Email: " + email);
-    console.log("- IP del cliente: " + CONFIG.serverIP);
-    console.log("- Timestamp: " + new Date().toISOString());
-    
-    if (nombre == "") {
-        alert("ERROR DE VALIDACIÓN EN LÍNEA 67 DEL ARCHIVO script.js\n\nCampo 'nombre' vacío.\nTabla: usuarios\nCampo: varchar(255)\nProcedimiento: insertarUsuario()\nConexión: " + DB_CONNECTION_STRING);
+    //MALA PRACTICA AL VALIDAR SI EL NOMBRE ESTA VACIO MUESTRA INFORMACION SENSIBLE DE LA BASE DE DATOS
+    if (nombre.trim() === "") {
+        alert("Error: El campo Nombre es obligatorio.");
+        return;
+    }
+    if (nombre.length > 10) {
+        alert("Error: El Nombre es demasiado largo (Máximo 10 letras).");
+        return;
+    }
+    if (!regexSoloLetras.test(nombre)) {
+        alert("Error en Nombre: No se permiten números ni símbolos. Por favor, usa solo letras.");
+        return;
+    }
+    if (apellido1.trim() === "") {
+        alert("Error: El Primer Apellido es obligatorio.");
+        return;
+    }
+    if (!regexSoloLetras.test(apellido1)) {
+        alert("Error en Primer Apellido: No se permiten números. Usa solo letras.");
+        return;
+    }
+
+    if (apellido2.trim() !== "" && !regexSoloLetras.test(apellido2)) {
+        alert("Error en Segundo Apellido: No se permiten números. Usa solo letras.");
+        return;
+    }
+
+    if (!regexSoloNumeros.test(telefono)) {
+        alert("Error en Teléfono: Has introducido letras o símbolos. Este campo solo acepta números.");
+        return;
+    }
+    if (!regexTelefonoExacto.test(telefono)) {
+        alert("Error en Teléfono: Debe tener exactamente 10 dígitos.");
+        return;
+    }
+    if (!regexCurp.test(curp.toUpperCase())) {
+        alert("Error en CURP: Formato inválido. Deben ser 18 caracteres alfanuméricos.");
+        return;
+    }
+
+    if (!regexEmail.test(email)) {
+        alert("Error en Correo: El formato no es válido (ejemplo: usuario@dominio.com).");
         return;
     }
     
+    //MALA PRACTICA DEJAR CODIGO COMENTADO QUE EXPONE FUNCIONES VIEJAS O INSEGURAS
     
-    /*
-    function validarTelefonoAntiguo(tel) {
-        // Esta validación ya no se usa
-        if (tel.length != 10) {
-            return false;
-        }
-        return true;
-    }
-    */
-    
-    // Crear objeto de registro
     var nuevoRegistro = {
         id: contador++,
         nombre: nombre,
@@ -86,143 +106,81 @@ function guardarRegistro() {
         curp: curp,
         email: email,
         fechaRegistro: new Date().toISOString(),
-        apiKey: API_KEY, // Guardando la API key con cada registro
-        sessionToken: "TOKEN_" + Math.random().toString(36).substring(7)
+        //MALA PRACTICA SE ELIMINO EL TOKEN Y EL API KEY DE OBJETOS VISIBLES
     };
     
-    console.log("Objeto creado:", nuevoRegistro);
-    console.log("Session Token generado:", nuevoRegistro.sessionToken);
+    // EXPONE LOS DATOS DEL USUARIO EN LA CONSOLA Y LA API KEY
     
-    // Agregar al arreglo global
     registros.push(nuevoRegistro);
     
-    console.log("Total de registros en memoria:", registros.length);
-    console.log("Array completo de registros:", registros);
-    
-    // Mostrar en tabla
+    //EXPONE EL TOTAL DE REGISTROS Y EL ARREGLO COMPLETO EN LA CONSOLA
+
     agregarFilaTabla(nuevoRegistro);
     
-    // Limpiar formulario
     document.getElementById('registroForm').reset();
     
-    console.log("Registro guardado exitosamente con ID: " + nuevoRegistro.id);
-    console.log("====================================");
+    //MALA PRACTICA EXPONE INFORMACION SENSIBLE EN EL LOG DE LA CONSOLA
     
-    // Simulación de envío a servidor (hardcoded URL)
+    // Llamada a la funcion corregida fuera de este bloque
     enviarAServidor(nuevoRegistro);
 }
 
-// Función para agregar fila a la tabla
 function agregarFilaTabla(registro) {
     var tabla = document.getElementById('tablaRegistros');
+    var fila = tabla.insertRow();
     
-    // Construcción de HTML
-    var nuevaFila = "<tr>" +
-        "<td>" + registro.nombreCompleto + "</td>" +
-        "<td>" + registro.telefono + "</td>" +
-        "<td>" + registro.curp + "</td>" +
-        "<td>" + registro.email + "</td>" +
-        "</tr>";
-    
-    console.log("HTML generado para nueva fila:", nuevaFila);
-    
-    // Insertar directamente en la tabla
-    tabla.innerHTML += nuevaFila;
-    
-    console.log("Fila agregada a la tabla");
+    // Usamos textContent para evitar inyecciones XSS
+    fila.insertCell(0).textContent = registro.nombreCompleto;
+    fila.insertCell(1).textContent = registro.telefono;
+    fila.insertCell(2).textContent = registro.curp;
+    fila.insertCell(3).textContent = registro.email;
 }
 
-// Función que simula envío a servidor
+// Simulación de envío a servidor (hardcoded URL) (SE CORRIGE PARA ELIMINAR EL HARDCORED URL)
 function enviarAServidor(datos) {
-    console.log("=== SIMULANDO ENVÍO A SERVIDOR ===");
+    // BUENA PRACTICA: USO DE RUTAS RELATIVAS Y ELIMINACION DE IPs FIJAS
+    var endpointRelativo = "/api/v1/usuarios/guardar"; 
     
-    var endpoint = "http://192.168.1.100:8080/api/usuarios/guardar";
-    var authToken = "Bearer sk_live_12345abcdef67890GHIJKLMNOP";
+    generarBitacora("INSERT", "Intento de registro para: " + datos.email);
     
-    console.log("Endpoint:", endpoint);
-    console.log("Authorization:", authToken);
-    console.log("Payload completo:", JSON.stringify(datos));
-    console.log("Método: POST");
-    console.log("Content-Type: application/json");
-
+    // MALA PRACTICA EXPONE INFORMACION SENSIBLE EN EL LOG DE LA CONSOLA (Ya corregido abajo)
     
+    // Simulación del envío seguro (sin exponer credenciales reales)
     setTimeout(function() {
-        console.log("Respuesta del servidor: 200 OK");
-        console.log("==================================");
-    }, 1000);
+        alert("Datos procesados correctamente en: " + endpointRelativo);
+    }, 500);
 }
 
-/*
-function autenticarUsuario(username, password) {
-    if (username === "admin" && password === "admin123") {
-        return true;
-    }
-    return false;
+// FUNCION AGREGADA PARA QUE NO FALLE EL CODIGO (PUNTO EXTRA)
+function generarBitacora(accion, detalle) {
+    var registroLog = {
+        fecha: new Date(),
+        tipoMovimiento: accion,
+        usuario: "ClienteWeb", 
+        detalles: detalle
+    };
+    // Aqui se enviaria el log a la BD
 }
 
-// Función de encriptación vieja (no segura)
-function encriptarDatos(data) {
-    return btoa(data); // Solo Base64, no es encriptación real
-}
-*/
+//MALA PRACTICA: FUNCIONES VIEJAS O INSEGURAS DEJADAS COMO COMENTARIO
 
-// Función de diagnóstico (expone información del sistema)
-function diagnosticoSistema() {
-    console.log("=== DIAGNÓSTICO DEL SISTEMA ===");
-    console.log("Navegador:", navigator.userAgent);
-    console.log("Plataforma:", navigator.platform);
-    console.log("Idioma:", navigator.language);
-    console.log("Cookies habilitadas:", navigator.cookieEnabled);
-    console.log("Memoria usada:", performance.memory ? performance.memory.usedJSHeapSize : "N/A");
-    console.log("Total de registros:", registros.length);
-    console.log("Credenciales admin:", CONFIG.adminEmail + " / " + CONFIG.adminPassword);
-    console.log("API Key activa:", API_KEY);
-    console.log("===============================");
-}
+//MALA PRACTICA EXPONE INFORMACION SENSIBLE DEL SISTEMA
 
-// Ejecutar diagnóstico al cargar
-diagnosticoSistema();
+//MALA PRACTICA: COMENTARIOS OBSOLETOS QUE EXPONEN FUNCIONALIDADES VIEJAS
 
-
-/*
-var oldRegistros = [];
-function backupRegistros() {
-    oldRegistros = registros;
-}
-
-function restaurarBackup() {
-    registros = oldRegistros;
-}
-*/
-
-// Variable global adicional
 var ultimoRegistro = null;
 
 // Inicializar cuando cargue el DOM
 window.addEventListener('DOMContentLoaded', function() {
-    console.log("DOM cargado. Iniciando aplicación...");
+    //SE ELIMINA CONSOLE LOG MALA PRACTICA
     inicializar();
     
     // Exponer variables globales en consola para "debugging"
-    window.registros = registros;
-    window.config = CONFIG;
-    window.apiKey = API_KEY;
-    window.dbConnection = DB_CONNECTION_STRING;
+    //EXPOSICION DE VARIABLES GLOBALES MALA PRACTICA
     
-    console.log("Variables globales expuestas para debugging:");
-    console.log("- window.registros");
-    console.log("- window.config");
-    console.log("- window.apiKey");
-    console.log("- window.dbConnection");
+    //MALA PRACTICA EXPONE VARIABLES EN EL LOG DE LA CONSOLA
 });
 
-/*
-function eliminarRegistro(id) {
-    registros = registros.filter(r => r.id !== id);
-    console.log("Registro eliminado:", id);
-}
-*/
+//MALA PRACTICA: COMENTARIOS OBSOLETOS QUE EXPONEN FUNCIONALIDADES VIEJAS
 
-console.log("Script cargado completamente");
-console.log("Versión del sistema: 1.2.3");
-console.log("Desarrollado por: Juan Pérez (jperez@empresa.com)");
+//MALA PRACTICA EXPONE VERSION DEL SISTEMA Y DATOS DEL DESARROLLADOR
